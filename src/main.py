@@ -1,6 +1,6 @@
 
-from component.app import App
+from component.app import ClientApp
 
-c = App('cApp')
+c = ClientApp('cApp')
 c.establish_connection()
 c.ask(unitId='cService', operation='sum', input={'a': 5, 'b': 6})

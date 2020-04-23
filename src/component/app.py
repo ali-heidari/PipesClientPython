@@ -1,6 +1,6 @@
 from .client import Client
 
-class App(Client):
+class ClientApp(Client):
     '''
     Client example of consumer app 
     '''
