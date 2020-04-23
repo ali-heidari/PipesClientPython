@@ -25,14 +25,7 @@ class Client(ABC):
             raise ValueError("No token received.")
         self.sio.connect('http://localhost:3000/?name='+self.name,
                          headers={'authorization': token}, transports='polling')
-        self.sio.emit('gateway',  {
-            "senderId": self.name,
-            "receiverId": 'unitId',
-            "operation": 'operation',
-            "input": 'input',
-            "awaiting": 'false'
-        })
-
+        
     def connect(self):
         '''
         Connect to PipesHub server and ask a token to establish socket connection
@@ -50,9 +43,26 @@ class Client(ABC):
         print('connection established')
 
     @sio.event
-    def socket_responseGateway(self, data):
+    def responseGateway(data):
         print('message received with ', data)
 
     @sio.event
     def socket_disconnect(self):
         print('disconnected from server')
+
+    def ask(self,unitId, operation, input) :
+        '''
+        Send a request to other unit and delivers the result
+        
+        @param {*} unitId The receiver unit id
+        @param {*} operation Id or name of operation on other side
+        @param {*} input Input data receiver needs to run operation
+        '''
+
+        self.sio.emit('gateway',  {
+            "senderId": self.name,
+            "receiverId": unitId,
+            "operation": operation,
+            "input": input,
+            "awaiting": True
+        })
