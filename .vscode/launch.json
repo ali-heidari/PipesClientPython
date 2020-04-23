@@ -11,5 +11,12 @@
             "program": "${file}",
             "console": "integratedTerminal"
         }
+        {
+            "name": "Python: Main File",
+            "type": "python",
+            "request": "launch",
+            "program": "${cwd}/src/main.py",
+            "console": "integratedTerminal"
+        }
     ]
 }
