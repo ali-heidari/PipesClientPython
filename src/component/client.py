@@ -1,6 +1,8 @@
 from abc import ABC, abstractmethod
+import requests
+import json
 
-class BaseComponent(ABC):
+class Client(ABC):
     '''
     Abstract class for clients 
     '''
@@ -17,4 +19,11 @@ class BaseComponent(ABC):
         self.connect()
 
     def connect(self):
-        pass
+        '''
+        Connect to PipesHub server and ask a token to establish socket connection
+        '''
+
+
+        r = requests.post("http://localhost:16916/auth", data={'name': 'guest'})
+
+        print(r.text)

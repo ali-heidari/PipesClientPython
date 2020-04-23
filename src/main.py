@@ -1,7 +1,10 @@
 import socketio
+from component.app import App
 
 sio = socketio.Client()
 
+c=App()
+c.establish_connection()
 
 @sio.event
 def connect():
