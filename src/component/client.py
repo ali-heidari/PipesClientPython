@@ -13,7 +13,7 @@ class Client(ABC):
     def __init__(self, name):
         self.init()
         self.name = name
-        self.sio = socketio.Client()
+        # self.sio = socketio.Client()
         self.__pipes__ = {}
 
     @abstractmethod
@@ -45,6 +45,10 @@ class Client(ABC):
 
     @sio.event
     def responseGateway(data):
+        print('message received with ', data)
+
+    @sio.event
+    def gateway(data):
         print('message received with ', data)
 
     @sio.event
