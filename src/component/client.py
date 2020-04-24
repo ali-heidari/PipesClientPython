@@ -8,13 +8,13 @@ class Client(ABC):
     '''
     Abstract class for clients 
     '''
-
     sio = socketio.Client()
-    __pipes__ = {}
 
     def __init__(self, name):
         self.init()
         self.name = name
+        self.sio = socketio.Client()
+        self.__pipes__ = {}
 
     @abstractmethod
     def init(self):
@@ -89,7 +89,7 @@ class Client(ABC):
             @param {*} funcName A name for operation
             @param {*} handler Operation body
         '''
-        
-        if self.__pipes__[funcName]:
+
+        if self.__pipes__.__contains__(funcName):
             raise KeyError('This function already exists.')
-        __pipes__[funcName] = handler
+        self.__pipes__[funcName] = handler
