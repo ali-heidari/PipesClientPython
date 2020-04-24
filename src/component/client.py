@@ -10,6 +10,7 @@ class Client(ABC):
     '''
 
     sio = socketio.Client()
+    __pipes__ = {}
 
     def __init__(self, name):
         self.init()
@@ -66,6 +67,7 @@ class Client(ABC):
             "input": input,
             "awaiting": True
         })
+
     def request(self, unitId, operation, input):
         '''
             Send a request to other unit and no result expected
@@ -80,3 +82,14 @@ class Client(ABC):
             "input": input,
             "awaiting": False
         })
+
+    def add(self, funcName, handler):
+        '''
+            Add a function to global __pipes prototype
+            @param {*} funcName A name for operation
+            @param {*} handler Operation body
+        '''
+        
+        if self.__pipes__[funcName]:
+            raise KeyError('This function already exists.')
+        __pipes__[funcName] = handler
