@@ -2,12 +2,12 @@
 from component.app import ClientApp
 from component.service import ClientService
 
-ca = ClientApp('cApp')
+ca = ClientApp('cAppPy')
 ca.establish_connection()
 
 
 
-cs = ClientService('cService');
+cs = ClientService('cServicePy');
 cs.establish_connection()
 cs.add('sum', lambda args: args.a + args.b);
 theList = []

@@ -2,18 +2,18 @@ from abc import ABC, abstractmethod
 import requests
 import json
 import socketio
+from component.socket_namespace import SocketNamespace
 
 
 class Client(ABC):
     '''
     Abstract class for clients 
     '''
-    sio = socketio.Client()
 
     def __init__(self, name):
         self.init()
         self.name = name
-        # self.sio = socketio.Client()
+        self.sio = socketio.Client()
         self.__pipes__ = {}
 
     @abstractmethod
@@ -26,6 +26,7 @@ class Client(ABC):
             raise ValueError("No token received.")
         self.sio.connect('http://localhost:3000/?name='+self.name,
                          headers={'authorization': token}, transports='polling')
+        self.sio.register_namespace(SocketNamespace(''))
 
     def connect(self):
         '''
@@ -38,22 +39,6 @@ class Client(ABC):
         if r.status_code == 200:
             return r.text
         return None
-
-    @sio.event
-    def socket_connect(self):
-        print('connection established')
-
-    @sio.event
-    def responseGateway(data):
-        print('message received with ', data)
-
-    @sio.event
-    def gateway(data):
-        print('message received with ', data)
-
-    @sio.event
-    def socket_disconnect(self):
-        print('disconnected from server')
 
     def ask(self, unitId, operation, input):
         '''
