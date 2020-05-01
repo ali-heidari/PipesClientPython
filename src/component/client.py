@@ -14,7 +14,7 @@ class Client(ABC):
         self.init()
         self.name = name
         self.sio = socketio.Client()
-        self.__pipes__ = {}
+        self.__pipes__ = {"name": name}
 
     @abstractmethod
     def init(self):
@@ -26,7 +26,8 @@ class Client(ABC):
             raise ValueError("No token received.")
         self.sio.connect('http://localhost:3000/?name='+self.name,
                          headers={'authorization': token}, transports='polling')
-        self.sio.register_namespace(SocketNamespace(''))
+        self.sio.register_namespace(
+            SocketNamespace('', lambda: self.__pipes__))
 
     def connect(self):
         '''
