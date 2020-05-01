@@ -15,7 +15,7 @@ class SocketNamespace(socketio.ClientNamespace):
     def on_responseGateway(self, data):
         print('message received with ', data)
 
-    def response(self, data, res):
+    def send_response(self, data, res):
         data["res"] = res
         data["input"].pop("pushResponse",None)
         self.emit('responseGateway', data)
@@ -29,7 +29,7 @@ class SocketNamespace(socketio.ClientNamespace):
                     if not data["input"]:
                         data["input"] = {}
                         
-                data["input"]["pushResponse"] = lambda res : self.response(data, res)
+                data["input"]["pushResponse"] = lambda res : self.send_response(data, res)
                 self.getPipes()[data["operation"]](data["input"])
 
     def on_disconnect(self):
