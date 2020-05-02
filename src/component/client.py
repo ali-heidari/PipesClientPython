@@ -72,6 +72,27 @@ class Client(ABC):
         self.responses.remove(filteredResponse[0])
         return filteredResponse[0]
 
+
+    def persist(self, unitId, operation, input,onResponse):
+        '''
+        Send a request to other unit and delivers the result
+
+        @param {*} unitId The receiver unit id
+        @param {*} operation Id or name of operation on other side
+        @param {*} input Input data receiver needs to run operation
+        @param {*} onResponse Called while new data received
+        '''
+
+        self.sio.emit('gateway',  {
+            "senderId": self.name,
+            "receiverId": unitId,
+            "operation": operation,
+            "input": input,
+            "awaiting": True
+        })
+        
+        self.sio.on('responseGateway', lambda x: onResponse(x))
+
     def request(self, unitId, operation, input):
         '''
             Send a request to other unit and no result expected
