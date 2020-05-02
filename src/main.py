@@ -1,27 +1,36 @@
 
+import asyncio
 from component.app import ClientApp
 from component.service import ClientService
 
 ca = ClientApp('cAppPy')
 ca.establish_connection()
 
-
-
-cs = ClientService('cServicePy');
+cs = ClientService('cServicePy')
 cs.establish_connection()
-cs.add('sum', lambda args: args["pushResponse"](args["a"] + args["b"]));
+cs.add('sum', lambda args: args["pushResponse"](args["a"] + args["b"]))
 theList = []
-cs.add('add', lambda args: theList.append(args["a"]));
-cs.add('list', lambda args: args["pushResponse"](theList));
+cs.add('add', lambda args: theList.append(args["a"]))
+cs.add('list', lambda args: args["pushResponse"](theList))
 
 
+async def tests():
+    res = await ca.ask(unitId='cServicePy', operation='sum', input={'a': 5, 'b': 6})
+    print("The sum is "+str(res["res"]))
 
-ca.ask(unitId='cServicePy', operation='sum', input={'a': 5, 'b': 6})
-ca.request('cServicePy', 'add', {
-    "a": 555
-});
-ca.request('cServicePy', 'add', {
-    "a": "test"
-});
+    ca.request('cServicePy', 'add', {
+        "a": 555
+    })
+    ca.request('cServicePy', 'add', {
+        "a": "test"
+    })
 
-ca.ask('cServicePy', 'list', None);
+    res = await ca.ask('cServicePy', 'list', None)
+    print("The list is "+str(res["res"]))
+
+
+futures = [tests()]
+loop = asyncio.get_event_loop()
+loop.run_until_complete(asyncio.wait(futures))
+# Python 3.7+
+# asyncio.run()

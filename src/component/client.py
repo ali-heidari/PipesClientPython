@@ -2,6 +2,7 @@ from abc import ABC, abstractmethod
 import requests
 import json
 import socketio
+import asyncio
 from component.socket_namespace import SocketNamespace
 
 
@@ -15,6 +16,7 @@ class Client(ABC):
         self.name = name
         self.sio = socketio.Client()
         self.__pipes__ = {"name": name}
+        self.responses = []
 
     @abstractmethod
     def init(self):
@@ -41,7 +43,7 @@ class Client(ABC):
             return r.text
         return None
 
-    def ask(self, unitId, operation, input):
+    async def ask(self, unitId, operation, input):
         '''
         Send a request to other unit and delivers the result
 
@@ -57,6 +59,18 @@ class Client(ABC):
             "input": input,
             "awaiting": True
         })
+
+        self.sio.on('responseGateway', lambda x: self.responses.append(x))
+        filteredResponse = []
+        while len(filteredResponse) < 1:
+            try:
+                filteredResponse = list(filter(
+                    lambda x: x["receiverId"] == unitId and x["operation"] == operation, self.responses))
+            except ValueError:
+                pass
+            await asyncio.sleep(0.01)
+        self.responses.remove(filteredResponse[0])
+        return filteredResponse[0]
 
     def request(self, unitId, operation, input):
         '''

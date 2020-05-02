@@ -8,12 +8,9 @@ class SocketNamespace(socketio.ClientNamespace):
     def __init__(self, namespace=None,getPipes=None):
         super().__init__(namespace=namespace)
         self.getPipes=getPipes
-
+        
     def on_connect(self):
         print('connection established')
-
-    def on_responseGateway(self, data):
-        print('message received with ', data)
 
     def send_response(self, data, res):
         data["res"] = res
