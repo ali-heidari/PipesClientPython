@@ -1,4 +1,5 @@
-
+import threading
+import datetime
 import asyncio
 from component.app import ClientApp
 from component.service import ClientService
@@ -14,6 +15,14 @@ cs.add('add', lambda args: theList.append(args["a"]))
 cs.add('list', lambda args: args["pushResponse"](theList))
 
 
+def setInterval(func,time,args):
+    e = threading.Event()
+    while not e.wait(time):
+        func(args)
+
+cs.add('message', lambda args:setInterval(lambda args:args["pushResponse"]("Time is " + str(datetime.datetime.now())),5,args))
+
+
 async def tests():
     res = await ca.ask(unitId='cServicePy', operation='sum', input={'a': 5, 'b': 6})
     print("The sum is "+str(res["res"]))
@@ -27,6 +36,8 @@ async def tests():
 
     res = await ca.ask('cServicePy', 'list', None)
     print("The list is "+str(res["res"]))
+
+    ca.persist('cServicePy', 'message', None,lambda data: print(data["res"]));
 
 
 futures = [tests()]
