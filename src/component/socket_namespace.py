@@ -1,21 +1,21 @@
-
-
+import copy
 import socketio
 
 
 class SocketNamespace(socketio.ClientNamespace):
 
-    def __init__(self, namespace=None,getPipes=None):
+    def __init__(self, namespace=None, getPipes=None):
         super().__init__(namespace=namespace)
-        self.getPipes=getPipes
-        
+        self.getPipes = getPipes
+
     def on_connect(self):
         print('connection established')
 
     def send_response(self, data, res):
         data["res"] = res
-        data["input"].pop("pushResponse",None)
-        self.emit('responseGateway', data)
+        dataToSend = copy.deepcopy(data)
+        dataToSend["input"].pop("pushResponse", None)
+        self.emit('responseGateway', dataToSend)
 
     def on_gateway(self, data):
         if isinstance(data, dict):
@@ -25,8 +25,9 @@ class SocketNamespace(socketio.ClientNamespace):
                 if data["awaiting"]:
                     if not data["input"]:
                         data["input"] = {}
-                        
-                data["input"]["pushResponse"] = lambda res : self.send_response(data, res)
+
+                data["input"]["pushResponse"] = lambda res: self.send_response(
+                    data, res)
                 self.getPipes()[data["operation"]](data["input"])
 
     def on_disconnect(self):
