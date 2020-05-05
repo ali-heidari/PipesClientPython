@@ -1,1 +1,2 @@
+requests==2.18.4
 gevent_socketio==0.3.6
